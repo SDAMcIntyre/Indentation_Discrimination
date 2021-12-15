@@ -38,7 +38,7 @@ exptSettings = {
     '01. Participant Code': 'test',
     # '02. Standard stimulus': '2',
     # '03. Comparison stimuli': '0.60,1.4,1.0,2.0,4.0,6.0,8.0',
-    '04. Number of repeats (even)': 10,
+    '04. Number of repeats (even)': 2,
     '05. Folder for saving data': 'data',
     '06. Participant screen': 0,
     '07. Participant screen resolution': '600,400'
@@ -71,7 +71,7 @@ comparison = right_area_coordinates
 #                              'comparison': cmp,
 #                              'presentation order': pres})
 
-stimList = my_squares.create_left_right_random_sequences(exptSettings['04. Number of repeats'])
+stimList = my_squares.create_left_right_random_sequences(int(exptSettings['04. Number of repeats (even)']))
 
 # # divide repeats by 2 because it gets doubled by presentation order
 # nRepeats = exptSettings['04. Number of repeats (even)'] / 2
@@ -159,8 +159,19 @@ for thisTrial in stimList:
     y_distance = next_y - previous_y
     print("move x",x_distance)
     print("move y",y_distance)
-    my_motor.move(my_motor.my_xaxis_id,x_distance)
-    my_motor.move(my_motor.my_yaxis_id,y_distance)
+    # select which axis to enable ttl on stop (the one with longer distance)
+    if abs(x_distance) >= abs(y_distance):
+        my_motor.disable_ttl(my_motor.my_yaxis_id)
+        my_motor.enable_ttl(my_motor.my_xaxis_id)
+        my_motor.move(my_motor.my_yaxis_id,y_distance)
+        my_motor.move(my_motor.my_xaxis_id,x_distance)
+    else:
+        my_motor.disable_ttl(my_motor.my_xaxis_id)
+        my_motor.enable_ttl(my_motor.my_yaxis_id)
+        my_motor.move(my_motor.my_xaxis_id,x_distance)
+        my_motor.move(my_motor.my_yaxis_id,y_distance)
+    # my_motor.move(my_motor.my_xaxis_id,x_distance)
+    # my_motor.move(my_motor.my_yaxis_id,y_distance)
     previous_motor_pos = stimPair[po]
     time.sleep(WAIT_TIME_BETWEEN_MOVEMENTS_MS/1000)
     # calculate x and y distance in mm for the next motor move
@@ -173,8 +184,21 @@ for thisTrial in stimList:
     y_distance = next_y - previous_y
     print("move x",x_distance)
     print("move y",y_distance)
-    my_motor.move(my_motor.my_xaxis_id,x_distance)
-    my_motor.move(my_motor.my_yaxis_id,y_distance)
+    # select which axis to enable ttl on stop (the one with longer distance)
+    if abs(x_distance) > abs(y_distance):
+        my_motor.disable_ttl(my_motor.my_yaxis_id)
+        my_motor.enable_ttl(my_motor.my_xaxis_id)
+        time.sleep(0.5)
+        my_motor.move(my_motor.my_yaxis_id,y_distance)
+        my_motor.move(my_motor.my_xaxis_id,x_distance)
+    else:
+        my_motor.disable_ttl(my_motor.my_xaxis_id)
+        my_motor.enable_ttl(my_motor.my_yaxis_id)
+        time.sleep(0.5)
+        my_motor.move(my_motor.my_xaxis_id,x_distance)
+        my_motor.move(my_motor.my_yaxis_id,y_distance)
+    # my_motor.move(my_motor.my_xaxis_id,x_distance)
+    # my_motor.move(my_motor.my_yaxis_id,y_distance)
     previous_motor_pos = stimPair[1 - po]
     time.sleep(WAIT_TIME_BETWEEN_MOVEMENTS_MS/1000)
 ##########################################################################################################
@@ -209,12 +233,13 @@ for thisTrial in stimList:
     ])
 
     # outputFiles.logEvent(exptClock.getTime(), '{} of {} complete'.format(trials.thisN + 1, trials.nTotal))
-    outputFiles.logEvent(exptClock.getTime(), '{} of {} complete'.format(trialNo, exptSettings['04. Number of repeats']))
+    outputFiles.logEvent(exptClock.getTime(), '{} of {} complete'.format(trialNo, int(exptSettings['04. Number of repeats (even)'])))
 
 # ----
 
 # -- END OF EXPERIMENT --
 
+my_motor.close()
 outputFiles.logEvent(exptClock.getTime(), 'experiment finished')
 print(displayText['finishedMessage'])
 participantMessage.text = displayText['finishedMessage']

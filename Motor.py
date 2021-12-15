@@ -38,9 +38,9 @@ class Motor():
 
     def __init__(self):
         # max speed accel, decel values are 10000
-        self.SPEED = 5000
-        self.ACCELERATION = 5000
-        self.DECELERATION = 5000
+        self.SPEED = 10000
+        self.ACCELERATION = 10000
+        self.DECELERATION = 10000
         # ttl pulse duration for aurora (microseconds)
         self.PULSE_DURATION = 65530
         # assert that 1 motor step is 0.0012mm
@@ -141,9 +141,24 @@ class Motor():
         # set flags for TTL pulse on stop to aurora
         sync_settings.SyncOutFlags = (sync_settings.SyncOutFlags & 0x0F) | SyncOutFlags.SYNCOUT_ENABLED
         sync_settings.SyncOutFlags = (sync_settings.SyncOutFlags & 0x0F) | SyncOutFlags.SYNCOUT_INVERT
-        sync_settings.SyncOutFlags = (sync_settings.SyncOutFlags & 0x0F) | SyncOutFlags.SYNCOUT_ONSTOP
-        
+        sync_settings.SyncOutFlags = (sync_settings.SyncOutFlags & 0x0F) | SyncOutFlags.SYNCOUT_ONSTOP       
         sync_settings.SyncOutPulseSteps = self.PULSE_DURATION
+        lib.set_sync_out_settings(dev_id, byref(sync_settings))
+
+    def enable_ttl(self,dev_id):
+        sync_settings = sync_out_settings_t()
+        lib.get_sync_out_settings(dev_id, byref(sync_settings))
+        sync_settings.SyncOutFlags = (sync_settings.SyncOutFlags & 0x0F) | SyncOutFlags.SYNCOUT_ENABLED
+        sync_settings.SyncOutFlags = (sync_settings.SyncOutFlags & 0x0F) | SyncOutFlags.SYNCOUT_INVERT
+        sync_settings.SyncOutFlags = (sync_settings.SyncOutFlags & 0x0F) | SyncOutFlags.SYNCOUT_ONSTOP   
+        lib.set_sync_out_settings(dev_id, byref(sync_settings))
+
+    def disable_ttl(self,dev_id):
+        sync_settings = sync_out_settings_t()
+        lib.get_sync_out_settings(dev_id, byref(sync_settings))
+        # set flags for TTL pulse on stop to aurora
+        if sync_settings.SyncOutFlags & SyncOutFlags.SYNCOUT_ENABLED == SyncOutFlags.SYNCOUT_ENABLED:
+            sync_settings.SyncOutFlags = sync_settings.SyncOutFlags & ~SyncOutFlags.SYNCOUT_ENABLED
         lib.set_sync_out_settings(dev_id, byref(sync_settings))
 
     # this function sets jerk free flag in power management to unchecked
@@ -190,3 +205,9 @@ class Motor():
         # if result == Result.Ok:
         #     print("Position: {0} steps, {1} microsteps".format(x_pos.Position, x_pos.uPosition))
         return x_pos.Position, x_pos.uPosition
+
+    def close(self):
+        self.disable_ttl(self.my_xaxis_id)
+        self.disable_ttl(self.my_yaxis_id)
+        lib.close_device(byref(cast(self.my_xaxis_id, POINTER(c_int))))
+        lib.close_device(byref(cast(self.my_yaxis_id, POINTER(c_int))))
