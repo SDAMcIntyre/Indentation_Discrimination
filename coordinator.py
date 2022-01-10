@@ -32,7 +32,7 @@ class Coordinator():
 
     def crete_mid_point_border(self):
         x = self.side
-        y = self.side/2
+        y = int(self.side/2)
         return (x,y)
 
     def create_left_coordinates(self):

@@ -209,5 +209,17 @@ class Motor():
     def close(self):
         self.disable_ttl(self.my_xaxis_id)
         self.disable_ttl(self.my_yaxis_id)
+        # move from current position to position 0,0
+        previous_motor_pos = (self.get_position(self.my_xaxis_id)[0],self.get_position(self.my_yaxis_id)[0])
+        start_pos = (0,0)
+        previous_x = previous_motor_pos[0]
+        previous_y = previous_motor_pos[1]
+        next_x = start_pos[0]
+        next_y = start_pos[1]
+        x_distance = next_x - previous_x
+        y_distance = next_y - previous_y
+        self.move(self.my_yaxis_id,y_distance)
+        self.move(self.my_xaxis_id,x_distance)
+        previous_motor_pos = start_pos
         lib.close_device(byref(cast(self.my_xaxis_id, POINTER(c_int))))
         lib.close_device(byref(cast(self.my_yaxis_id, POINTER(c_int))))
