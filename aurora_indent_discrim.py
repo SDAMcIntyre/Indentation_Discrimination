@@ -6,41 +6,32 @@ import aurora_sequence_creator
 import Motor
 from expt_helpers import *
 
+#######################################
+# FLEXIBLE PARAMETERS
 # time for aurora to apply force
 WAIT_TIME_BETWEEN_MOTOR_MOVEMENTS_MS = 2500
+# there will be created a few points within each square (A and B)
 HOW_MANY_POINTS_IN_EACH_SQUARE = 3
 # distances in mm
 DISTANCE_FROM_MIDLINE = 3
 VERTICAL_DISTANCE_BETWEEN_POINTS = 1
+# path where aurora protocols are located
+# to generate dsf sequence files that point to protocols
 AURORA_PROTOCOLS_PATH = 'C:\\Users\\oumth89\\Desktop\\Protocols'
+############################################
+
 
 # -- CREATE MOTOR OBJECT --
 my_motor = Motor.Motor()
 my_motor.calibrate_axis(my_motor.my_xaxis_id)
 my_motor.calibrate_axis(my_motor.my_yaxis_id)
+
 # --
 
 # -- CREATE OBJECT THAT HANDLES POSITIONS --
 coord = coordinator.Coordinator(total=HOW_MANY_POINTS_IN_EACH_SQUARE,
                                 horizontal=DISTANCE_FROM_MIDLINE,vertical=VERTICAL_DISTANCE_BETWEEN_POINTS)
-
-########################################################
-# DEBUG CREATING SEQUENCE FOR AURORA
-# # create test sequence
-# stimList = coord.create_left_right_random_sequences(6,'A','B')
-# foldername ='.\\' + 'data' + '\\'
-# aurora_sequencer = aurora_sequence_creator.SequenceCreator(AURORA_PROTOCOLS_PATH,
-#                                                             foldername,
-#                                                             "ForceSequence.dsf",
-#                                                             [2],
-#                                                             [0.60,1.4,1.0,2.0,4.0,6.0,8.0],
-#                                                             stimList,
-#                                                             'A',
-#                                                             'B')
-# my_force_seq = aurora_sequencer.create_aurora_force_sequence()
-# aurora_sequencer.create_sequence_file(my_force_seq)
-############################################################
-
+# --
 
 # -- MOVE MOTOR TO THE START POSITION (MIDDLE OF MIDLINE BETWEEN SQUARES) --
 # disable trigger
@@ -61,7 +52,25 @@ print("move y",y_distance)
 my_motor.move(my_motor.my_yaxis_id,y_distance)
 my_motor.move(my_motor.my_xaxis_id,x_distance)
 previous_motor_pos = start_pos
+
 # --
+
+########################################################
+# DEBUG CREATING SEQUENCE FOR AURORA
+# # create test sequence
+# stimList = coord.create_left_right_random_sequences(6,'A','B')
+# foldername ='.\\' + 'data' + '\\'
+# aurora_sequencer = aurora_sequence_creator.SequenceCreator(AURORA_PROTOCOLS_PATH,
+#                                                             foldername,
+#                                                             "ForceSequence.dsf",
+#                                                             [2],
+#                                                             [0.60,1.4,1.0,2.0,4.0,6.0,8.0],
+#                                                             stimList,
+#                                                             'A',
+#                                                             'B')
+# my_force_seq = aurora_sequencer.create_aurora_force_sequence()
+# aurora_sequencer.create_sequence_file(my_force_seq)
+############################################################
 
 # -- DISPLAY TEXT --
 
@@ -112,6 +121,7 @@ if not (standard_area == 'A' and comparison_area == 'B') or (standard_area == 'B
     sys.exit()
 # create total of random sequences, Standard area, Comparison area
 stimList = coord.create_left_right_random_sequences(int(exptSettings['06. Number of repeats (even)']),standard_area,comparison_area)
+
 # --
 
 
@@ -120,7 +130,7 @@ foldername ='.\\' + exptSettings['07. Folder for saving data'] + '\\'
 sequence_file_name = exptSettings['00. Experiment Name'] + '_' + data.getDateStr(format='%Y-%m-%d_%H-%M-%S') + '_P' + exptSettings[
         '01. Participant Code']+'_'+'ForceSequence.dsf'
 # create sequencer object that formats sequence file and paths
-aurora_sequencer = aurora_sequence_creator.SequenceCreator('C:\\Users\\oumth89\\Desktop\\Protocols',
+aurora_sequencer = aurora_sequence_creator.SequenceCreator(AURORA_PROTOCOLS_PATH,
                                                             foldername,
                                                             sequence_file_name,
                                                             standard,
