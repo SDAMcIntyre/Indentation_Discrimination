@@ -19,7 +19,7 @@ class SequenceCreator():
 
         self.headers = 'DMCv5 Sequence File \nBase File:  \nProtocol File\tTimed?\tTimeToWait\tFileMarker\tRepeat\n'
         self.user_path = protocol_path
-        self.forceLineText = self.user_path + '\\Emma ex force{}.dpf\tManual\t0.000\t{}\t0\t\n' 
+        self.forceLineText = self.user_path + '\\Emma{}.dpf\tManual\t0.000\t{}\t0\t\n'
         self.path2save = path2saveseq
         self.standard = standard_force
         self.comparison = comparison_force

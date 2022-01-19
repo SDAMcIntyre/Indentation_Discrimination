@@ -17,7 +17,7 @@ DISTANCE_FROM_MIDLINE = 3
 VERTICAL_DISTANCE_BETWEEN_POINTS = 1
 # path where aurora protocols are located
 # to generate dsf sequence files that point to protocols
-AURORA_PROTOCOLS_PATH = 'C:\\Users\\oumth89\\Desktop\\Protocols'
+AURORA_PROTOCOLS_PATH = 'C:\\Emma protocols\\Protocols'
 ############################################
 
 
@@ -89,15 +89,15 @@ displayText = {'waitMessage': 'Please wait.',
 exptSettings = {
     '00. Experiment Name': '',
     '01. Participant Code': 'test',
-    '02. Standard stimulus': '2',
-    '03. Comparison stimuli': '0.60,1.4,1.0,2.0,4.0,6.0,8.0',
+    '02. Standard stimulus': '250.0',
+    '03. Comparison stimuli': '100.0,250.0,400.0,600.0,800.0,900.0,1000.0',
     '04. Standard Area': 'A',
     '05. Comparison Area': 'B',
     '06. Number of repeats (even)': 6,
     '07. Folder for saving data': 'data',
     '08. Participant screen': 0,
     '09. Participant screen resolution': '600,400',
-    '10. Path to Aurora Protocols': 'C:\\Users\\oumth89\\Desktop\\Protocols'
+    '10. Path to Aurora Protocols': 'C:\\Emma protocols\\Protocols'
 }
 dlg = gui.DlgFromDict(exptSettings, title='Experiment details')
 if dlg.OK:
@@ -130,7 +130,7 @@ foldername ='.\\' + exptSettings['07. Folder for saving data'] + '\\'
 sequence_file_name = exptSettings['00. Experiment Name'] + '_' + data.getDateStr(format='%Y-%m-%d_%H-%M-%S') + '_P' + exptSettings[
         '01. Participant Code']+'_'+'ForceSequence.dsf'
 # create sequencer object that formats sequence file and paths
-aurora_sequencer = aurora_sequence_creator.SequenceCreator(AURORA_PROTOCOLS_PATH,
+aurora_sequencer = aurora_sequence_creator.SequenceCreator(exptSettings['10. Path to Aurora Protocols'],
                                                             foldername,
                                                             sequence_file_name,
                                                             standard,
