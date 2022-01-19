@@ -142,6 +142,8 @@ aurora_sequencer = aurora_sequence_creator.SequenceCreator(AURORA_PROTOCOLS_PATH
 my_force_seq = aurora_sequencer.create_aurora_force_sequence()
 # save that sequence as a dsf file for aurora
 aurora_sequencer.create_sequence_file(my_force_seq)
+# add forces to trials dictionaries
+stimList = coord.add_forces2trials(my_force_seq,stimList)
 
 # ----
 
@@ -199,6 +201,7 @@ for thisTrial in stimList:
     if thisTrial['presentation order'] == 'standard first' : po = 0
     if thisTrial['presentation order'] == 'standard second' : po = 1
     stimPair = [thisTrial['standard'], thisTrial['comparison']]
+    stimPairForces = [thisTrial['standard_force'], thisTrial['comparison_force']]
     stimPair2log = [exptSettings['04. Standard Area'],exptSettings['05. Comparison Area']]
     # update participant display
     participantMessage.text = displayText['interStimMessage']
@@ -232,8 +235,6 @@ for thisTrial in stimList:
         my_motor.enable_ttl(my_motor.my_yaxis_id)
         my_motor.move(my_motor.my_xaxis_id,x_distance)
         my_motor.move(my_motor.my_yaxis_id,y_distance)
-    # my_motor.move(my_motor.my_xaxis_id,x_distance)
-    # my_motor.move(my_motor.my_yaxis_id,y_distance)
     previous_motor_pos = stimPair[po]
     time.sleep(WAIT_TIME_BETWEEN_MOTOR_MOVEMENTS_MS/1000)
     # calculate x and y distance in mm for the next motor move
@@ -259,8 +260,6 @@ for thisTrial in stimList:
         time.sleep(0.5)
         my_motor.move(my_motor.my_xaxis_id,x_distance)
         my_motor.move(my_motor.my_yaxis_id,y_distance)
-    # my_motor.move(my_motor.my_xaxis_id,x_distance)
-    # my_motor.move(my_motor.my_yaxis_id,y_distance)
     previous_motor_pos = stimPair[1 - po]
     time.sleep(WAIT_TIME_BETWEEN_MOTOR_MOVEMENTS_MS/1000)
 ##########################################################################################################
@@ -287,8 +286,8 @@ for thisTrial in stimList:
 
     outputFiles.writeTrialData([
         trialNo, #trials.thisN + 1,
-        thisTrial['standard'],
-        thisTrial['comparison'],
+        thisTrial['standard_force'],
+        thisTrial['comparison_force'],
         comparisonMoreIntense,
         thisTrial['presentation order'],
         response

@@ -121,3 +121,20 @@ class Coordinator():
             print(sequences[i])
             print()
         return sequences
+
+    # function to add forces to trials
+    def add_forces2trials(self,force_seq,trials_dict):
+        new_dict_list = []
+        force_idx = 0
+        for dictionary in trials_dict:
+            if (force_idx + 1) < len(force_seq):
+                first,second = force_seq[force_idx],force_seq[force_idx+1]
+                if dictionary['presentation order'] == 'standard first':
+                    dictionary['standard_force'] = first
+                    dictionary['comparison_force'] = second
+                else:
+                    dictionary['standard_force'] = second
+                    dictionary['comparison_force'] = first
+            new_dict_list.append(dictionary)
+            force_idx +=2
+        return new_dict_list
