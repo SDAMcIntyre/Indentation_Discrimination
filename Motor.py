@@ -152,6 +152,7 @@ class Motor():
         sync_settings.SyncOutFlags = (sync_settings.SyncOutFlags & 0x0F) | SyncOutFlags.SYNCOUT_INVERT
         sync_settings.SyncOutFlags = (sync_settings.SyncOutFlags & 0x0F) | SyncOutFlags.SYNCOUT_ONSTOP   
         lib.set_sync_out_settings(dev_id, byref(sync_settings))
+        time.sleep(0.2)
 
     def disable_ttl(self,dev_id):
         sync_settings = sync_out_settings_t()
@@ -160,6 +161,7 @@ class Motor():
         if sync_settings.SyncOutFlags & SyncOutFlags.SYNCOUT_ENABLED == SyncOutFlags.SYNCOUT_ENABLED:
             sync_settings.SyncOutFlags = sync_settings.SyncOutFlags & ~SyncOutFlags.SYNCOUT_ENABLED
         lib.set_sync_out_settings(dev_id, byref(sync_settings))
+        time.sleep(0.2)
 
     # this function sets jerk free flag in power management to unchecked
     # this allows both axes to start almost simultaneously
