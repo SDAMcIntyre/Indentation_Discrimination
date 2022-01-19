@@ -199,7 +199,7 @@ for thisTrial in stimList:
     if thisTrial['presentation order'] == 'standard first' : po = 0
     if thisTrial['presentation order'] == 'standard second' : po = 1
     stimPair = [thisTrial['standard'], thisTrial['comparison']]
-
+    stimPair2log = [exptSettings['04. Standard Area'],exptSettings['05. Comparison Area']]
     # update participant display
     participantMessage.text = displayText['interStimMessage']
     event.clearEvents()
@@ -209,7 +209,8 @@ for thisTrial in stimList:
     # present the stimuli
     # ILONA INSERT CODE HERE
     # GET THE ORDER FOR THE SKIN REGION FROM "po" (LINES 120-121, 133)
-    outputFiles.logEvent(exptClock.getTime(), '{} then {}'.format(stimPair[po], stimPair[1 - po]))
+    # outputFiles.logEvent(exptClock.getTime(), '{} then {}'.format(stimPair[po], stimPair[1 - po]))
+    outputFiles.logEvent(exptClock.getTime(), '{} then {}'.format(stimPair2log[po], stimPair2log[1 - po]))
     # calculate x and y distance in mm for the next motor move
     print("Current pos:",previous_motor_pos)
     previous_x = previous_motor_pos[0]
