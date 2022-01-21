@@ -9,7 +9,7 @@ from expt_helpers import *
 #######################################
 # FLEXIBLE PARAMETERS
 # time for aurora to apply force
-WAIT_TIME_BETWEEN_MOTOR_MOVEMENTS_MS = 2500
+WAIT_TIME_BETWEEN_MOTOR_MOVEMENTS_MS = 3100
 # there will be created a few points within each square (A and B)
 HOW_MANY_POINTS_IN_EACH_SQUARE = 3
 # distances in mm
@@ -87,13 +87,13 @@ displayText = {'waitMessage': 'Please wait.',
 # -- GET INPUT FROM THE EXPERIMENTER --
 
 exptSettings = {
-    '00. Experiment Name': '',
+    '00. Experiment Name': 'tutorial',
     '01. Participant Code': 'test',
-    '02. Standard stimulus': '250.0',
+    '02. Standard stimulus': '600.0',
     '03. Comparison stimuli': '100.0,250.0,400.0,600.0,800.0,900.0,1000.0',
-    '04. Standard Area': 'A',
-    '05. Comparison Area': 'B',
-    '06. Number of repeats (even)': 6,
+    '04. Standard Area': 'A', #  (A 1st, B 2nd)
+    '05. Comparison Area': 'B', #  (A 1st, B 2nd) # add line "Intervention Area:"
+    '06. Number of repeats (even)': 6, # "Intervention (film/shaved):"
     '07. Folder for saving data': 'data',
     '08. Participant screen': 0,
     '09. Participant screen resolution': '600,400',
