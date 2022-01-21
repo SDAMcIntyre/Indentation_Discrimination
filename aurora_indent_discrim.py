@@ -131,9 +131,7 @@ sequence_file_name = exptSettings['00. Experiment Name'] + '_' + data.getDateStr
 aurora_sequencer = aurora_sequence_creator.SequenceCreator(exptSettings['12. Path to Aurora Protocols'],
                                                             foldername,
                                                             sequence_file_name,
-                                                            trials,
-                                                            standard_area,
-                                                            comparison_area)
+                                                            trials)
 # create current sequence
 my_force_seq = aurora_sequencer.create_aurora_force_sequence()
 # save that sequence as a dsf file for aurora
