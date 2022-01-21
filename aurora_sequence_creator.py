@@ -14,55 +14,28 @@ class SequenceCreator():
         comparison_area ('A' or 'B') - which area was selected as comparison
     
     '''
-    def __init__(self,protocol_path,path2saveseq,seq_file_name,standard_force,comparison_force,sequence,standard_area,comparison_area):
+    def __init__(self,protocol_path,path2saveseq,seq_file_name,sequence,standard_area,comparison_area):
         self.forceFileName = seq_file_name 
 
         self.headers = 'DMCv5 Sequence File \nBase File:  \nProtocol File\tTimed?\tTimeToWait\tFileMarker\tRepeat\n'
         self.user_path = protocol_path
         self.forceLineText = self.user_path + '\\Emma{}.dpf\tManual\t0.000\t{}\t0\t\n'
         self.path2save = path2saveseq
-        self.standard = standard_force
-        self.comparison = comparison_force
         # list of dictionaries
         self.sequence_dict = sequence
         self.standard_area = standard_area
         self.comparison_area = comparison_area
 
     def create_aurora_force_sequence(self):
-        # shuffle the list of comparison forces
-        random.shuffle(self.comparison)
-        print("New comparison order",self.comparison)
-        # shuffle standard forces
-        random.shuffle(self.standard)
-        print("New standard order",self.standard)
         force_sequence = []
-        standard_iterator = 0
-        comparison_iterator = 0
-        for i in range(len(self.sequence_dict)):
-            if self.sequence_dict[i]['presentation order'] == 'standard first':
-                force_sequence.append(self.standard[standard_iterator])
-                # wrap around if indexes out of range
-                if standard_iterator == len(self.standard)-1:
-                    standard_iterator = 0
-                else:
-                    standard_iterator +=1
-                force_sequence.append(self.comparison[comparison_iterator])
-                if comparison_iterator == len(self.comparison)-1:
-                    comparison_iterator = 0
-                else:
-                    comparison_iterator +=1
+        for dictionary in self.sequence_dict:
+            if dictionary['presentation order'] == 'standard first':
+                force_sequence.append(dictionary['standard_force'])
+                force_sequence.append(dictionary['comparison_force'])
             else:
-                force_sequence.append(self.comparison[comparison_iterator])
-                if comparison_iterator == len(self.comparison)-1:
-                    comparison_iterator = 0
-                else:
-                    comparison_iterator +=1
-                force_sequence.append(self.standard[standard_iterator])
-                if standard_iterator == len(self.standard)-1:
-                    standard_iterator = 0
-                else:
-                    standard_iterator +=1
-        print("Force sequence",force_sequence)
+                force_sequence.append(dictionary['comparison_force'])
+                force_sequence.append(dictionary['standard_force'])
+        # print("Force sequence",force_sequence)
         return force_sequence
 
     def create_sequence_file(self,sequence):

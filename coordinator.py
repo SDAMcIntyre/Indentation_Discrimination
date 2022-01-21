@@ -71,11 +71,8 @@ class Coordinator():
                 coord_list.append((x,y))
         return coord_list
 
-
-    # randomly shuffle odd
-    # reverse order of even pair
-    # Standard areas names can be either A or B (A is to the left of midline, B is to the right of midline)
-    def create_left_right_random_sequences(self,total_repetitions,standard_area='A',comparison_area='B'):
+    def add_coordinates2forces(self,trials_dict,standard_area,comparison_area):
+        # arrange areas in the order so that the standard is first
         if standard_area == 'A' and comparison_area == 'B':
             areas = [self.left_coordinates,self.right_coordinates]
         elif standard_area == 'B' and comparison_area == 'A':
@@ -83,58 +80,10 @@ class Coordinator():
         else:
             print("Standard and comparison areac can be only called A or B!")
             return []
-        # 0 stands for standard area, 1 stands for comparison area
-        order = [0, 1]
-        # this is a list of dictionaries for psychopy trials
-        sequences = []
-        if total_repetitions > 0:
-            for i in range(total_repetitions):
-                if i%2 == 0: #always shuffle first
-                    random.shuffle(order)
-                    my_order_translated = 'standard first' if order[0] == 0 else 'standard second'
-                    my_dict = {'standard':random.choice(areas[0]),
-                                'comparison':random.choice(areas[1]),
-                                'presentation order':my_order_translated}
-                    sequences.append(my_dict)
-                elif i%2 != 0:
-                    my_order_translated = 'standard first' if sequences[-1]['presentation order'] == 'standard second' else 'standard second'
-                    my_dict = {'standard':random.choice(areas[0]),
-                                'comparison':random.choice(areas[1]),
-                                'presentation order':my_order_translated}
-                    sequences.append(my_dict)
-        else:
-            print("choose to generate at least one pair")
-        ##################################################
-        # # debug
-        for i in range(len(sequences)):
-            # print(sequences[i]['presentation order'])
-            if standard_area == 'A':
-                if sequences[i]['presentation order'] == 'standard first':
-                    print('AB')
-                else:
-                    print('BA')
-            else:
-                if sequences[i]['presentation order'] == 'standard first':
-                    print('BA')
-                else:
-                    print('AB')
-            print(sequences[i])
-            print()
-        return sequences
-
-    # function to add forces to trials
-    def add_forces2trials(self,force_seq,trials_dict):
         new_dict_list = []
-        force_idx = 0
         for dictionary in trials_dict:
-            if (force_idx + 1) < len(force_seq):
-                first,second = force_seq[force_idx],force_seq[force_idx+1]
-                if dictionary['presentation order'] == 'standard first':
-                    dictionary['standard_force'] = first
-                    dictionary['comparison_force'] = second
-                else:
-                    dictionary['standard_force'] = second
-                    dictionary['comparison_force'] = first
+            dictionary['standard'] = random.choice(areas[0])
+            dictionary['comparison'] = random.choice(areas[1])
             new_dict_list.append(dictionary)
-            force_idx +=2
         return new_dict_list
+

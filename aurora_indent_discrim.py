@@ -55,23 +55,6 @@ previous_motor_pos = start_pos
 
 # --
 
-########################################################
-# DEBUG CREATING SEQUENCE FOR AURORA
-# # create test sequence
-# stimList = coord.create_left_right_random_sequences(6,'A','B')
-# foldername ='.\\' + 'data' + '\\'
-# aurora_sequencer = aurora_sequence_creator.SequenceCreator(AURORA_PROTOCOLS_PATH,
-#                                                             foldername,
-#                                                             "ForceSequence.dsf",
-#                                                             [2],
-#                                                             [0.60,1.4,1.0,2.0,4.0,6.0,8.0],
-#                                                             stimList,
-#                                                             'A',
-#                                                             'B')
-# my_force_seq = aurora_sequencer.create_aurora_force_sequence()
-# aurora_sequencer.create_sequence_file(my_force_seq)
-############################################################
-
 # -- DISPLAY TEXT --
 
 displayText = {'waitMessage': 'Please wait.',
@@ -91,13 +74,15 @@ exptSettings = {
     '01. Participant Code': 'test',
     '02. Standard stimulus': '600.0',
     '03. Comparison stimuli': '100.0,250.0,400.0,600.0,800.0,900.0,1000.0',
-    '04. Standard Area': 'A', #  (A 1st, B 2nd)
-    '05. Comparison Area': 'B', #  (A 1st, B 2nd) # add line "Intervention Area:"
-    '06. Number of repeats (even)': 6, # "Intervention (film/shaved):"
-    '07. Folder for saving data': 'data',
-    '08. Participant screen': 0,
-    '09. Participant screen resolution': '600,400',
-    '10. Path to Aurora Protocols': 'C:\\Emma protocols\\Protocols'
+    '04. Standard Area (A 1st, B 2nd)': 'A', 
+    '05. Comparison Area (A 1st, B 2nd)': 'B', 
+    '06. Intervention Area':'',
+    '07. Intervention (film/shaved)':'',
+    '08. Number of repeats (even)': 2,
+    '09. Folder for saving data': 'data',
+    '10. Participant screen': 0,
+    '11. Participant screen resolution': '600,400',
+    '12. Path to Aurora Protocols': 'C:\\Emma protocols\\Protocols'
 }
 dlg = gui.DlgFromDict(exptSettings, title='Experiment details')
 if dlg.OK:
@@ -106,51 +91,60 @@ else:
     core.quit()  # the user hit cancel so exit
 
 # get screen resolution
-participantScreenRes = [int(i) for i in exptSettings['09. Participant screen resolution'].split(',')]
+participantScreenRes = [int(i) for i in exptSettings['11. Participant screen resolution'].split(',')]
 
 # get stimulus values
 standard = [float(i) for i in exptSettings['02. Standard stimulus'].split(',')]
 comparison = [float(i) for i in exptSettings['03. Comparison stimuli'].split(',')]
 # --
 
-# -- CREATE SEQUENCE OF COORDINATES --
-standard_area = exptSettings['04. Standard Area']
-comparison_area = exptSettings['05. Comparison Area']
+# -- SETUP STIMULUS RANDOMISATION AND CONTROL --
+presentationOrder = ['standard first', 'standard second']
+stimList = []
+for std in standard:
+    for cmp in comparison:
+        for pres in presentationOrder:
+            stimList.append({'standard_force': std,
+                             'comparison_force': cmp,
+                             'presentation order': pres})
+
+# divide repeats by 2 because it gets doubled by presentation order
+nRepeats = exptSettings['08. Number of repeats (even)'] / 2
+init_trials = data.TrialHandler(stimList, nRepeats)
+
+# add area coordinates to that
+standard_area = exptSettings['04. Standard Area (A 1st, B 2nd)']
+comparison_area = exptSettings['05. Comparison Area (A 1st, B 2nd)']
 if not (standard_area == 'A' and comparison_area == 'B') or (standard_area == 'B' and comparison_area == 'A'):
     print("Standard and comparison areas have to be called A or B")
     sys.exit()
-# create total of random sequences, Standard area, Comparison area
-stimList = coord.create_left_right_random_sequences(int(exptSettings['06. Number of repeats (even)']),standard_area,comparison_area)
+trials = coord.add_coordinates2forces(init_trials,standard_area,comparison_area)
 
 # --
 
 
 # ADD EXPORT OF AURORA PROTOCOL & SEQUENCE FILES
-foldername ='.\\' + exptSettings['07. Folder for saving data'] + '\\'
+foldername ='.\\' + exptSettings['09. Folder for saving data'] + '\\'
 sequence_file_name = exptSettings['00. Experiment Name'] + '_' + data.getDateStr(format='%Y-%m-%d_%H-%M-%S') + '_P' + exptSettings[
         '01. Participant Code']+'_'+'ForceSequence.dsf'
 # create sequencer object that formats sequence file and paths
-aurora_sequencer = aurora_sequence_creator.SequenceCreator(exptSettings['10. Path to Aurora Protocols'],
+aurora_sequencer = aurora_sequence_creator.SequenceCreator(exptSettings['12. Path to Aurora Protocols'],
                                                             foldername,
                                                             sequence_file_name,
-                                                            standard,
-                                                            comparison,
-                                                            stimList,
+                                                            trials,
                                                             standard_area,
                                                             comparison_area)
 # create current sequence
 my_force_seq = aurora_sequencer.create_aurora_force_sequence()
 # save that sequence as a dsf file for aurora
 aurora_sequencer.create_sequence_file(my_force_seq)
-# add forces to trials dictionaries
-stimList = coord.add_forces2trials(my_force_seq,stimList)
 
 # ----
 
 
 # -- MAKE FOLDER/FILES TO SAVE DATA --
 outputFiles = DataFileCollection(
-    foldername='./' + exptSettings['07. Folder for saving data'] + '/',
+    foldername='./' + exptSettings['09. Folder for saving data'] + '/',
     filename=exptSettings['00. Experiment Name'] + '_' + data.getDateStr(format='%Y-%m-%d_%H-%M-%S') + '_P' + exptSettings[
         '01. Participant Code'],
     headers=['trial-number', 'standard', 'comparison', 'comparison.more.intense', 'presentation.order', 'response'],
@@ -164,7 +158,7 @@ outputFiles = DataFileCollection(
 participantWin = visual.Window(
     fullscr=False,
     allowGUI=False,
-    screen=exptSettings['08. Participant screen'],
+    screen=exptSettings['10. Participant screen'],
     size=participantScreenRes,
     units='norm'
 )
@@ -195,14 +189,14 @@ for (key, keyTime) in event.waitKeys(keyList=['space', 'escape'], timeStamped=ex
 # experiment loop
 trialNo = 0
 # for thisTrial in trials:
-for thisTrial in stimList:
+for thisTrial in trials:
     trialNo += 1
     # get the stimulus for this trial
     if thisTrial['presentation order'] == 'standard first' : po = 0
     if thisTrial['presentation order'] == 'standard second' : po = 1
     stimPair = [thisTrial['standard'], thisTrial['comparison']]
     stimPairForces = [thisTrial['standard_force'], thisTrial['comparison_force']]
-    stimPair2log = [exptSettings['04. Standard Area'],exptSettings['05. Comparison Area']]
+    stimPair2log = [exptSettings['04. Standard Area (A 1st, B 2nd)'],exptSettings['05. Comparison Area (A 1st, B 2nd)']]
     # update participant display
     participantMessage.text = displayText['interStimMessage']
     event.clearEvents()
@@ -285,7 +279,7 @@ for thisTrial in stimList:
     comparisonMoreIntense = int(mouseResponse[0] == po)
 
     outputFiles.writeTrialData([
-        trialNo, #trials.thisN + 1,
+        trialNo, #trials.thisN + 1, /trialNo
         thisTrial['standard_force'],
         thisTrial['comparison_force'],
         comparisonMoreIntense,
@@ -293,8 +287,7 @@ for thisTrial in stimList:
         response
     ])
 
-    # outputFiles.logEvent(exptClock.getTime(), '{} of {} complete'.format(trials.thisN + 1, trials.nTotal))
-    outputFiles.logEvent(exptClock.getTime(), '{} of {} complete'.format(trialNo, int(exptSettings['06. Number of repeats (even)'])))
+    outputFiles.logEvent(exptClock.getTime(), '{} of {} complete'.format(trialNo, len(trials)))
 
 # ----
 
