@@ -67,6 +67,15 @@ displayText = {'waitMessage': 'Please wait.',
                'touchMessage': 'Follow the audio cue.'}
 # --
 
+# -- PLAY AUDIO --
+
+pygame.mixer.pre_init()
+pygame.mixer.init()
+firstCue = pygame.mixer.Sound('./sounds/1st.wav')
+secondCue = pygame.mixer.Sound('./sounds/2nd.wav')
+# --
+
+
 # -- GET INPUT FROM THE EXPERIMENTER --
 
 exptSettings = {
@@ -303,3 +312,36 @@ participantWin.close()
 core.quit()
 
 # ----
+
+
+soundCh = firstCue.play("C:\Users\emma_\OneDrive\Skrivbord\Aurora PyCharm\first.mp3")
+logEvent(audioStartTime, 'first stim audio cue started playing', logFile)
+while soundCh.get_busy():
+    for (key, keyTime) in event.getKeys(['escape'], timeStamped=exptClock):
+        soundCh.stop()
+        logEvent(keyTime, 'experiment aborted', logFile)
+        dataFile.close();
+        logFile.close();
+        core.quit()
+logEvent(exptClock.getTime(), 'first audio cue finished playing', logFile)
+
+# code for delivering the first stimulus
+
+soundCh = secondCue.play("C:\Users\emma_\OneDrive\Skrivbord\Aurora PyCharm\second.mp3")
+logEvent(audioStartTime, second
+stim
+audio
+cue
+started
+playing
+',logFile)
+while soundCh.get_busy():
+    for (key, keyTime) in event.getKeys(['escape'], timeStamped=exptClock):
+        soundCh.stop()
+        logEvent(keyTime, 'experiment aborted', logFile)
+        dataFile.close();
+        logFile.close();
+        core.quit()
+logEvent(exptClock.getTime(), 'second audio cue finished playing', logFile)
+
+# code for delivering the second stimulus
