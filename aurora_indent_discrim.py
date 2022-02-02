@@ -1,3 +1,4 @@
+import pygame
 from psychopy import visual, core, gui, data, event
 import time
 import sys
@@ -65,14 +66,6 @@ displayText = {'waitMessage': 'Please wait.',
                'stimMessage': 'Next stimulus:',
                'continueMessage': 'Press space for the touch cue.',
                'touchMessage': 'Follow the audio cue.'}
-# --
-
-# -- PLAY AUDIO --
-
-pygame.mixer.pre_init()
-pygame.mixer.init()
-firstCue = pygame.mixer.Sound('./sounds/1st.wav')
-secondCue = pygame.mixer.Sound('./sounds/2nd.wav')
 # --
 
 
@@ -225,6 +218,18 @@ for thisTrial in trials:
     y_distance = next_y - previous_y
     print("move x",x_distance)
     print("move y",y_distance)
+    pygame.mixer.pre_init()
+    pygame.mixer.init()
+    firstCue = pygame.mixer.Sound('./sounds/first.wav')
+    soundCh = firstCue.play()
+    outputFiles.logEvent(exptClock.getTime(), 'first stim audio cue started playing')
+    while soundCh.get_busy():
+        for (key, keyTime) in event.getKeys(['escape'], timeStamped=exptClock):
+            soundCh.stop()
+            outputFiles.logEvent(keyTime, 'experiment aborted')
+            outputFiles.logAbort(keyTime)
+            core.quit()
+    outputFiles.logEvent(exptClock.getTime(), 'first audio cue finished playing')
     # select which axis to enable ttl on stop (the one with longer distance)
     if abs(x_distance) >= abs(y_distance):
         my_motor.disable_ttl(my_motor.my_yaxis_id)
@@ -313,8 +318,8 @@ core.quit()
 
 # ----
 
-
-soundCh = firstCue.play("C:\Users\emma_\OneDrive\Skrivbord\Aurora PyCharm\first.mp3")
+'''
+soundCh = firstCue.play("C:/Emma protocols/Sound/first.mp3")
 logEvent(audioStartTime, 'first stim audio cue started playing', logFile)
 while soundCh.get_busy():
     for (key, keyTime) in event.getKeys(['escape'], timeStamped=exptClock):
@@ -327,7 +332,7 @@ logEvent(exptClock.getTime(), 'first audio cue finished playing', logFile)
 
 # code for delivering the first stimulus
 
-soundCh = secondCue.play("C:\Users\emma_\OneDrive\Skrivbord\Aurora PyCharm\second.mp3")
+soundCh = secondCue.play("C:/Emma protocols/Sound/first/second.mp3")
 logEvent(audioStartTime, second
 stim
 audio
@@ -343,5 +348,5 @@ while soundCh.get_busy():
         logFile.close();
         core.quit()
 logEvent(exptClock.getTime(), 'second audio cue finished playing', logFile)
+'''
 
-# code for delivering the second stimulus
