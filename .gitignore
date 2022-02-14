@@ -144,3 +144,6 @@ data/
 
 # processed data
 Processed Force Data/
+
+# R
+.Rhistory
