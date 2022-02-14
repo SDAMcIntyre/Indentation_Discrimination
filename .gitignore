@@ -136,3 +136,5 @@ data/
 
 # Mac OS
 .DS_Store
+*.pdf
+*.png
