@@ -43,7 +43,7 @@ fit <- quickpsy(
   grouping = .(condition, PID),
   log = FALSE,
   fun = cum_normal_fun,
-  B = 1000,
+  B = 100,
   ci = 0.95
   )
 # add grouping back in (ID and condition)
