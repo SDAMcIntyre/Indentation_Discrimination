@@ -72,8 +72,8 @@ displayText = {'waitMessage': 'Please wait.',
 # -- GET INPUT FROM THE EXPERIMENTER --
 
 exptSettings = {
-    '00. Experiment Name': 'pilot.shaved',
-    '01. Participant Code': 'MMM12',
+    '00. Experiment Name': 'pilot',
+    '01. Participant Code': 'test',
     '02. Standard stimulus': '600.0',
     '03. Comparison stimuli': '100.0,250.0,400.0,600.0,800.0,900.0,1000.0',
     '04. Standard Area (A 1st, B 2nd)': 'A', #  (A 1st, B 2nd)
