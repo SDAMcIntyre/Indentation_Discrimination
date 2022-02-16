@@ -86,4 +86,3 @@ class Coordinator():
             dictionary['comparison'] = random.choice(areas[1])
             new_dict_list.append(dictionary)
         return new_dict_list
-
