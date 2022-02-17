@@ -10,12 +10,12 @@ class SequenceCreator():
         sequence (list of dictionaries that have keys: 'presentation order') 
     
     '''
-    def __init__(self,protocol_path,path2saveseq,seq_file_name,sequence):
-        self.forceFileName = seq_file_name 
+    def __init__(self,protocol_path,path2saveseq,file_name_prefix,sequence):
+        self.file_name_prefix = file_name_prefix
 
         self.headers = 'DMCv5 Sequence File \nBase File:  \nProtocol File\tTimed?\tTimeToWait\tFileMarker\tRepeat\n'
         self.user_path = protocol_path
-        self.forceLineText = self.user_path + '\\Emma{}.dpf\tManual\t0.000\t{}\t0\t\n'
+        self.forceLineText = self.user_path + '\\Emma{}.dpf\tManual\t0.000\t{}_{}_{}\t0\t\n'
         self.path2save = path2saveseq
         # list of dictionaries
         self.sequence_dict = sequence
@@ -35,8 +35,8 @@ class SequenceCreator():
     def create_sequence_file(self,sequence):
         if not os.path.exists(self.path2save):
             os.mkdir(self.path2save)
-        forceFile = open(self.path2save + self.forceFileName, 'w')
+        forceFile = open((self.path2save+self.file_name_prefix+'_ForceSequence.dsf'), 'w')
         forceFile.write(self.headers)
         for n,value in enumerate(sequence):
-            forceFile.write(self.forceLineText .format(value,n+1))
+            forceFile.write(self.forceLineText .format(value, self.file_name_prefix, value, n+1))
         forceFile.close()

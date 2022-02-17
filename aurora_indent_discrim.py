@@ -126,15 +126,19 @@ trials = coord.add_coordinates2forces(init_trials,standard_area,comparison_area)
 
 # --
 
+#file prefix to match aurora data files with python data files
+expt_file_prefix = (
+        exptSettings['00. Experiment Name'] +
+        '_' + data.getDateStr(format='%Y-%m-%d_%H-%M-%S')
+        + '_P' + exptSettings['01. Participant Code']
+)
 
-# ADD EXPORT OF AURORA PROTOCOL & SEQUENCE FILES
-foldername ='.\\' + exptSettings['09. Folder for saving data'] + '\\'
-sequence_file_name = exptSettings['00. Experiment Name'] + '_' + data.getDateStr(format='%Y-%m-%d_%H-%M-%S') + '_P' + exptSettings[
-        '01. Participant Code']+'_'+'ForceSequence.dsf'
+# EXPORT OF AURORA SEQUENCE FILES
+foldername = exptSettings['09. Folder for saving data'] + '/'
 # create sequencer object that formats sequence file and paths
 aurora_sequencer = aurora_sequence_creator.SequenceCreator(exptSettings['12. Path to Aurora Protocols'],
                                                             foldername,
-                                                            sequence_file_name,
+                                                            expt_file_prefix,
                                                             trials)
 # create current sequence
 my_force_seq = aurora_sequencer.create_aurora_force_sequence()
@@ -147,8 +151,7 @@ aurora_sequencer.create_sequence_file(my_force_seq)
 # -- MAKE FOLDER/FILES TO SAVE DATA --
 outputFiles = DataFileCollection(
     foldername='./' + exptSettings['09. Folder for saving data'] + '/',
-    filename=exptSettings['00. Experiment Name'] + '_' + data.getDateStr(format='%Y-%m-%d_%H-%M-%S') + '_P' + exptSettings[
-        '01. Participant Code'],
+    filename=expt_file_prefix,
     headers=['trial-number', 'standard', 'comparison', 'comparison.more.intense', 'presentation.order', 'response'],
     dlgInput=exptSettings
 )

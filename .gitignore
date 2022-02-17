@@ -151,3 +151,4 @@ Processed Force Data/
 *.bak
 
 data/*
+*.dsf
