@@ -239,16 +239,7 @@ for thisTrial in trials:
     outputFiles.logEvent(exptClock.getTime(), "move x {}" .format(x_distance))
     outputFiles.logEvent(exptClock.getTime(), "move y {}" .format(y_distance))
     # select which axis to enable ttl on stop (the one with longer distance)
-    if abs(x_distance) >= abs(y_distance):
-        my_motor.disable_ttl(my_motor.my_yaxis_id)
-        my_motor.enable_ttl(my_motor.my_xaxis_id)
-        my_motor.move(my_motor.my_yaxis_id,y_distance)
-        my_motor.move(my_motor.my_xaxis_id,x_distance)
-    else:
-        my_motor.disable_ttl(my_motor.my_xaxis_id)
-        my_motor.enable_ttl(my_motor.my_yaxis_id)
-        my_motor.move(my_motor.my_xaxis_id,x_distance)
-        my_motor.move(my_motor.my_yaxis_id,y_distance)
+    my_motor.move_xy_ttl(x_distance, y_distance)
     previous_motor_pos = stimPairPosition[po]
     motorStartTime = exptClock.getTime()
     outputFiles.logEvent(exptClock.getTime(), 'motor started moving')
@@ -282,18 +273,7 @@ for thisTrial in trials:
     outputFiles.logEvent(exptClock.getTime(), "move x {}" .format(x_distance))
     outputFiles.logEvent(exptClock.getTime(), "move y {}" .format(y_distance))
     # select which axis to enable ttl on stop (the one with longer distance)
-    if abs(x_distance) > abs(y_distance):
-        my_motor.disable_ttl(my_motor.my_yaxis_id)
-        my_motor.enable_ttl(my_motor.my_xaxis_id)
-        time.sleep(0.5)
-        my_motor.move(my_motor.my_yaxis_id,y_distance)
-        my_motor.move(my_motor.my_xaxis_id,x_distance)
-    else:
-        my_motor.disable_ttl(my_motor.my_xaxis_id)
-        my_motor.enable_ttl(my_motor.my_yaxis_id)
-        time.sleep(0.5)
-        my_motor.move(my_motor.my_xaxis_id,x_distance)
-        my_motor.move(my_motor.my_yaxis_id,y_distance)
+    my_motor.move_xy_ttl(x_distance, y_distance)
     previous_motor_pos = stimPairPosition[1 - po]
     motorStartTime = exptClock.getTime()
     while exptClock.getTime() < motorStartTime + (WAIT_TIME_BETWEEN_MOTOR_MOVEMENTS_MS/1000):

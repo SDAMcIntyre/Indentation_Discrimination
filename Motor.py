@@ -201,6 +201,18 @@ class Motor():
         # print("Going to {0} steps".format(dictance_steps))
         lib.command_move(device_id, dictance_steps, current_upos)
 
+    def move_xy_ttl(self, x_distance, y_distance):
+        if abs(x_distance) >= abs(y_distance):
+            self.disable_ttl(self.my_yaxis_id)
+            self.enable_ttl(self.my_xaxis_id)
+            self.move(self.my_yaxis_id, y_distance)
+            self.move(self.my_xaxis_id, x_distance)
+        else:
+            self.disable_ttl(self.my_xaxis_id)
+            self.enable_ttl(self.my_yaxis_id)
+            self.move(self.my_xaxis_id, x_distance)
+            self.move(self.my_yaxis_id, y_distance)
+
     def get_position(self, device_id):
         x_pos = get_position_t()
         result = lib.get_position(device_id, byref(x_pos))
