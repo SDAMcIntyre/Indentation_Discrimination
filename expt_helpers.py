@@ -34,3 +34,7 @@ class DataFileCollection():
         self.dataFile = open(self.fileprefix + '_data.csv', 'a')
         self.dataFile.write(lineFormatting.format(*trialData))
         self.dataFile.close()
+
+def get_motor_distances(prev, next):
+    distance = [next[0] - prev[0], next[1] - prev[1]]
+    return distance

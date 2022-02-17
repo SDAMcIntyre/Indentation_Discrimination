@@ -43,12 +43,7 @@ my_motor.disable_ttl(my_motor.my_yaxis_id)
 previous_motor_pos = (0,0)
 # start position between squares
 start_pos = coord.mid_point
-previous_x = previous_motor_pos[0]
-previous_y = previous_motor_pos[1]
-next_x = start_pos[0]
-next_y = start_pos[1]
-x_distance = next_x - previous_x
-y_distance = next_y - previous_y
+[x_distance, y_distance] = get_motor_distances(previous_motor_pos,start_pos)
 print("move x",x_distance)
 print("move y",y_distance)
 my_motor.move(my_motor.my_yaxis_id,y_distance)
@@ -223,12 +218,7 @@ for thisTrial in trials:
     outputFiles.logEvent(exptClock.getTime(), '{} then {}'.format(stimPair2log[po], stimPair2log[1 - po]))
     # calculate x and y distance in mm for the next motor move
     outputFiles.logEvent(exptClock.getTime(), "Current pos: {}" .format(previous_motor_pos))
-    previous_x = previous_motor_pos[0]
-    previous_y = previous_motor_pos[1]
-    next_x = stimPair[po][0]
-    next_y = stimPair[po][1]
-    x_distance = next_x - previous_x
-    y_distance = next_y - previous_y
+    [x_distance, y_distance] = get_motor_distances(previous_motor_pos, stimPair[po])
     outputFiles.logEvent(exptClock.getTime(), "move x {}" .format(x_distance))
     outputFiles.logEvent(exptClock.getTime(), "move y {}" .format(y_distance))
     # select which axis to enable ttl on stop (the one with longer distance)
@@ -262,12 +252,7 @@ for thisTrial in trials:
     # end sound
     # calculate x and y distance in mm for the next motor move
     outputFiles.logEvent(exptClock.getTime(), "Current pos {}" .format(previous_motor_pos))
-    previous_x = previous_motor_pos[0]
-    previous_y = previous_motor_pos[1]
-    next_x = stimPair[1 - po][0]
-    next_y = stimPair[1 - po][1]
-    x_distance = next_x - previous_x
-    y_distance = next_y - previous_y
+    [x_distance, y_distance] = get_motor_distances(previous_motor_pos, stimPair[po])
     outputFiles.logEvent(exptClock.getTime(), "move x {}" .format(x_distance))
     outputFiles.logEvent(exptClock.getTime(), "move y {}" .format(y_distance))
     # select which axis to enable ttl on stop (the one with longer distance)
