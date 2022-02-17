@@ -2,7 +2,7 @@
 import pygame
 from psychopy import visual, core, gui, data, event
 import time
-import sys
+import re
 import coordinator
 import aurora_sequence_creator
 import Motor
@@ -183,7 +183,7 @@ exptClock = core.Clock()
 exptClock.reset()
 
 # wait for start trigger
-print(displayText['startMessage'])
+print('Experimenter: '+displayText['startMessage']+' Press ESC to quit.')
 participantMessage.text = displayText['waitMessage']
 event.clearEvents()
 participantMessage.autoDraw = True
@@ -199,14 +199,33 @@ for (key, keyTime) in event.waitKeys(keyList=['space', 'escape'], timeStamped=ex
 
 # experiment loop
 trialNo = 0
+nIndentationsExpected = 0
+nIndentationsDelivered = 0
+file_pattern = expt_file_prefix+'.*\.ddf'
 for thisTrial in trials:
     trialNo += 1
     # get the stimulus for this trial
     if thisTrial['presentation order'] == 'standard first' : po = 0
     if thisTrial['presentation order'] == 'standard second' : po = 1
-    stimPair = [thisTrial['standard'], thisTrial['comparison']]
+    stimStdComp = ['standard', 'comparison']
+    stimPairPosition = [thisTrial['standard_position'], thisTrial['comparison_position']]
     stimPairForces = [thisTrial['standard_force'], thisTrial['comparison_force']]
-    stimPair2log = [exptSettings['04. Standard Area (A 1st, B 2nd)'],exptSettings['05. Comparison Area (A 1st, B 2nd)']]
+    stimPairArea = [exptSettings['04. Standard Area (A 1st, B 2nd)'],exptSettings['05. Comparison Area (A 1st, B 2nd)']]
+    # outputFiles.logEvent(exptClock.getTime(), '{} then {}'.format(stimPair[po], stimPair[1 - po]))
+    outputFiles.logEvent(
+        exptClock.getTime(),
+        'Trial {}: First {} {}mN, area {}, position {}. Second {} {}mN, area {}, position {}'.format(
+            trialNo,
+            stimStdComp[po],
+            stimPairForces[po],
+            stimPairArea[po],
+            stimPairPosition[po],
+            stimStdComp[1-po],
+            stimPairForces[1-po],
+            stimPairArea[1-po],
+            stimPairPosition[1-po]
+        ))
+
     # update participant display
     participantMessage.text = displayText['interStimMessage']
     event.clearEvents()
@@ -214,15 +233,12 @@ for thisTrial in trials:
     participantWin.flip()
 ##########################################################################################################
     # present the stimuli
-    # outputFiles.logEvent(exptClock.getTime(), '{} then {}'.format(stimPair[po], stimPair[1 - po]))
-    outputFiles.logEvent(exptClock.getTime(), '{} then {}'.format(stimPair2log[po], stimPair2log[1 - po]))
     # calculate x and y distance in mm for the next motor move
     outputFiles.logEvent(exptClock.getTime(), "Current pos: {}" .format(previous_motor_pos))
-    [x_distance, y_distance] = get_motor_distances(previous_motor_pos, stimPair[po])
+    [x_distance, y_distance] = get_motor_distances(previous_motor_pos, stimPairPosition[po])
     outputFiles.logEvent(exptClock.getTime(), "move x {}" .format(x_distance))
     outputFiles.logEvent(exptClock.getTime(), "move y {}" .format(y_distance))
     # select which axis to enable ttl on stop (the one with longer distance)
-    motorStartTime = exptClock.getTime()
     if abs(x_distance) >= abs(y_distance):
         my_motor.disable_ttl(my_motor.my_yaxis_id)
         my_motor.enable_ttl(my_motor.my_xaxis_id)
@@ -233,12 +249,22 @@ for thisTrial in trials:
         my_motor.enable_ttl(my_motor.my_yaxis_id)
         my_motor.move(my_motor.my_xaxis_id,x_distance)
         my_motor.move(my_motor.my_yaxis_id,y_distance)
-    previous_motor_pos = stimPair[po]
+    previous_motor_pos = stimPairPosition[po]
+    motorStartTime = exptClock.getTime()
+    outputFiles.logEvent(exptClock.getTime(), 'motor started moving')
     while exptClock.getTime() < motorStartTime + (WAIT_TIME_BETWEEN_MOTOR_MOVEMENTS_MS/1000):
         for (key, keyTime) in event.getKeys(['escape'], timeStamped=exptClock):
             my_motor.close()
             outputFiles.logAbort(keyTime)
             core.quit()
+    outputFiles.logEvent(exptClock.getTime(), 'finished waiting {} ms for motor' .format(WAIT_TIME_BETWEEN_MOTOR_MOVEMENTS_MS))
+    # check if the stimulus really was delivered
+    nIndentationsExpected += 1
+    file_pattern_thisIndentation = '--\d*_'+expt_file_prefix+'_{}_{}\.ddf' .format(stimPairForces[po], nIndentationsExpected)
+    thisIndentationFile = [file for file in os.listdir(exptSettings['09. Folder for saving data']) if re.search(file_pattern_thisIndentation, file)]
+    outputFiles.logEvent(exptClock.getTime(), "Indentation delivered: {}" .format(thisIndentationFile))
+    nIndentationsDelivered = len([file for file in os.listdir(exptSettings['09. Folder for saving data']) if re.search(file_pattern, file)])
+    outputFiles.logEvent(exptClock.getTime(), "# indentations expected = {}. # delivered = {}.".format(nIndentationsExpected,nIndentationsDelivered))
     # start first sound
     soundCh = firstCue.play()
     outputFiles.logEvent(exptClock.getTime(), 'first stim audio cue started playing')
@@ -252,11 +278,10 @@ for thisTrial in trials:
     # end sound
     # calculate x and y distance in mm for the next motor move
     outputFiles.logEvent(exptClock.getTime(), "Current pos {}" .format(previous_motor_pos))
-    [x_distance, y_distance] = get_motor_distances(previous_motor_pos, stimPair[po])
+    [x_distance, y_distance] = get_motor_distances(previous_motor_pos, stimPairPosition[1-po])
     outputFiles.logEvent(exptClock.getTime(), "move x {}" .format(x_distance))
     outputFiles.logEvent(exptClock.getTime(), "move y {}" .format(y_distance))
     # select which axis to enable ttl on stop (the one with longer distance)
-    motorStartTime = exptClock.getTime()
     if abs(x_distance) > abs(y_distance):
         my_motor.disable_ttl(my_motor.my_yaxis_id)
         my_motor.enable_ttl(my_motor.my_xaxis_id)
@@ -269,12 +294,21 @@ for thisTrial in trials:
         time.sleep(0.5)
         my_motor.move(my_motor.my_xaxis_id,x_distance)
         my_motor.move(my_motor.my_yaxis_id,y_distance)
-    previous_motor_pos = stimPair[1 - po]
+    previous_motor_pos = stimPairPosition[1 - po]
+    motorStartTime = exptClock.getTime()
     while exptClock.getTime() < motorStartTime + (WAIT_TIME_BETWEEN_MOTOR_MOVEMENTS_MS/1000):
         for (key, keyTime) in event.getKeys(['escape'], timeStamped=exptClock):
             my_motor.close()
             outputFiles.logAbort(keyTime)
             core.quit()
+    outputFiles.logEvent(exptClock.getTime(), 'finished waiting {} ms for motor' .format(WAIT_TIME_BETWEEN_MOTOR_MOVEMENTS_MS))
+    # check if the stimulus really was delivered
+    nIndentationsExpected += 1
+    file_pattern_thisIndentation = '--\d*_'+expt_file_prefix+'_{}_{}\.ddf' .format(stimPairForces[po], nIndentationsExpected)
+    thisIndentationFile = [file for file in os.listdir(exptSettings['09. Folder for saving data']) if re.search(file_pattern_thisIndentation, file)]
+    outputFiles.logEvent(exptClock.getTime(), "Indentation delivered: {}" .format(thisIndentationFile))
+    nIndentationsDelivered = len([file for file in os.listdir(exptSettings['09. Folder for saving data']) if re.search(file_pattern, file)])
+    outputFiles.logEvent(exptClock.getTime(), "# indentations expected = {}. # delivered = {}.".format(nIndentationsExpected,nIndentationsDelivered))
     # play
     soundCh = secondCue.play()
     outputFiles.logEvent(exptClock.getTime(), 'second stim audio cue started playing')

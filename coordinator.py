@@ -82,7 +82,7 @@ class Coordinator():
             return []
         new_dict_list = []
         for dictionary in trials_dict:
-            dictionary['standard'] = random.choice(areas[0])
-            dictionary['comparison'] = random.choice(areas[1])
+            dictionary['standard_position'] = random.choice(areas[0])
+            dictionary['comparison_position'] = random.choice(areas[1])
             new_dict_list.append(dictionary)
         return new_dict_list
