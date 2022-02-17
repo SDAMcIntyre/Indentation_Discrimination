@@ -1,0 +1,10 @@
+DMCv5.3 Protocol File
+Input Sampling Frequency: 2000Hz
+Output Sampling Frequency: 2000Hz
+Protocol Type: Unitized
+Wait(s)	Then(action)	On(port)	Units	Parameters
+0.200000	Ramp	Length Out	6, 0.5		
+0.200000	Ramp	Force Out	400, 0.05		
+0.200000	Ramp	Force Out	0, 0.05		
+0.200000	Ramp	Length Out	0, 0.5		
+0.200000	Stop				

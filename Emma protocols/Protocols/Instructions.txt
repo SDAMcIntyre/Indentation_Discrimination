@@ -1,0 +1,7 @@
+Make sure the files have the same type of ending (a number and not e.g mN) 
+No space between 'Emma' and the force 
+EmmaXXX
+
+Always double check if it works when trying something new
+
+Put the old ones int the subfolder
