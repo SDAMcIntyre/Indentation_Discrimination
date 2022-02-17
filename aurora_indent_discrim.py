@@ -2,7 +2,7 @@
 import pygame
 from psychopy import visual, core, gui, data, event
 import time
-import re
+import re # https://regexr.com/
 import coordinator
 import aurora_sequence_creator
 import Motor
