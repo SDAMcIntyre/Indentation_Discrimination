@@ -214,15 +214,15 @@ for thisTrial in trials:
     # outputFiles.logEvent(exptClock.getTime(), '{} then {}'.format(stimPair[po], stimPair[1 - po]))
     outputFiles.logEvent(exptClock.getTime(), '{} then {}'.format(stimPair2log[po], stimPair2log[1 - po]))
     # calculate x and y distance in mm for the next motor move
-    print("Current pos:",previous_motor_pos)
+    outputFiles.logEvent(exptClock.getTime(), "Current pos: {}" .format(previous_motor_pos))
     previous_x = previous_motor_pos[0]
     previous_y = previous_motor_pos[1]
     next_x = stimPair[po][0]
     next_y = stimPair[po][1]
     x_distance = next_x - previous_x
     y_distance = next_y - previous_y
-    print("move x",x_distance)
-    print("move y",y_distance)
+    outputFiles.logEvent(exptClock.getTime(), "move x {}" .format(x_distance))
+    outputFiles.logEvent(exptClock.getTime(), "move y {}" .format(y_distance))
     # select which axis to enable ttl on stop (the one with longer distance)
     if abs(x_distance) >= abs(y_distance):
         my_motor.disable_ttl(my_motor.my_yaxis_id)
@@ -252,15 +252,15 @@ for thisTrial in trials:
     outputFiles.logEvent(exptClock.getTime(), 'first audio cue finished playing')
     # end sound
     # calculate x and y distance in mm for the next motor move
-    print("Current pos",previous_motor_pos)
+    outputFiles.logEvent(exptClock.getTime(), "Current pos {}" .format(previous_motor_pos))
     previous_x = previous_motor_pos[0]
     previous_y = previous_motor_pos[1]
     next_x = stimPair[1 - po][0]
     next_y = stimPair[1 - po][1]
     x_distance = next_x - previous_x
     y_distance = next_y - previous_y
-    print("move x",x_distance)
-    print("move y",y_distance)
+    outputFiles.logEvent(exptClock.getTime(), "move x {}" .format(x_distance))
+    outputFiles.logEvent(exptClock.getTime(), "move y {}" .format(y_distance))
     # select which axis to enable ttl on stop (the one with longer distance)
     if abs(x_distance) > abs(y_distance):
         my_motor.disable_ttl(my_motor.my_yaxis_id)
@@ -294,7 +294,7 @@ for thisTrial in trials:
 ##########################################################################################################
     # present question to participant
     participantResponded = False
-    print(displayText['waitMessage'])  # for experimenter
+    outputFiles.logEvent(exptClock.getTime(), 'Experimenter, '+displayText['waitMessage'])  # for experimenter
     event.clearEvents()
     participantMessage.text = displayText['stimQuestion']
     while not participantResponded:
@@ -330,7 +330,6 @@ for thisTrial in trials:
 
 my_motor.close()
 outputFiles.logEvent(exptClock.getTime(), 'experiment finished')
-print(displayText['finishedMessage'])
 participantMessage.text = displayText['finishedMessage']
 event.clearEvents()
 participantMouse.clickReset()
