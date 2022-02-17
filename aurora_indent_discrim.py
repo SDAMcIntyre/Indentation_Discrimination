@@ -174,6 +174,14 @@ participantMessage = visual.TextStim(participantWin, text=displayText['waitMessa
 
 # --
 
+# -- SETUP AUDIO CUES --
+
+pygame.mixer.pre_init()
+pygame.mixer.init()
+firstCue = pygame.mixer.Sound('./sounds/first.wav')
+secondCue = pygame.mixer.Sound('./sounds/second.wav')
+
+# --
 
 # -- RUN THE EXPERIMENT --
 exptClock = core.Clock()
@@ -242,9 +250,6 @@ for thisTrial in trials:
             outputFiles.logAbort(keyTime)
             core.quit()
     # start first sound
-    pygame.mixer.pre_init()
-    pygame.mixer.init()
-    firstCue = pygame.mixer.Sound('./sounds/first.wav')
     soundCh = firstCue.play()
     outputFiles.logEvent(exptClock.getTime(), 'first stim audio cue started playing')
     while soundCh.get_busy():
@@ -286,10 +291,7 @@ for thisTrial in trials:
             outputFiles.logAbort(keyTime)
             core.quit()
     # play
-    pygame.mixer.pre_init()
-    pygame.mixer.init()
-    firstCue = pygame.mixer.Sound('./sounds/second.wav')
-    soundCh = firstCue.play()
+    soundCh = secondCue.play()
     outputFiles.logEvent(exptClock.getTime(), 'second stim audio cue started playing')
     while soundCh.get_busy():
         for (key, keyTime) in event.getKeys(['escape'], timeStamped=exptClock):
