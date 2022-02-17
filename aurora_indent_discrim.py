@@ -93,6 +93,14 @@ else:
     my_motor.close()
     core.quit()  # the user hit cancel so exit
 
+# check standard and comparison areas are correct
+standard_area = exptSettings['04. Standard Area (A 1st, B 2nd)']
+comparison_area = exptSettings['05. Comparison Area (A 1st, B 2nd)']
+if not (standard_area == 'A' and comparison_area == 'B') or (standard_area == 'B' and comparison_area == 'A'):
+    print("Standard and comparison areas have to be called A or B")
+    my_motor.close()
+    core.quit()
+
 # get screen resolution
 participantScreenRes = [int(i) for i in exptSettings['11. Participant screen resolution'].split(',')]
 
@@ -116,12 +124,6 @@ nRepeats = exptSettings['08. Number of repeats (even)'] / 2
 init_trials = data.TrialHandler(stimList, nRepeats)
 
 # add area coordinates to that
-standard_area = exptSettings['04. Standard Area (A 1st, B 2nd)']
-comparison_area = exptSettings['05. Comparison Area (A 1st, B 2nd)']
-if not (standard_area == 'A' and comparison_area == 'B') or (standard_area == 'B' and comparison_area == 'A'):
-    print("Standard and comparison areas have to be called A or B")
-    my_motor.close()
-    sys.exit()
 trials = coord.add_coordinates2forces(init_trials,standard_area,comparison_area)
 
 # --
@@ -186,6 +188,7 @@ participantWin.flip()
 for (key, keyTime) in event.waitKeys(keyList=['space', 'escape'], timeStamped=exptClock):
     if key in ['escape']:
         outputFiles.logAbort(keyTime)
+        my_motor.close()
         core.quit()
     if key in ['space']:
         exptClock.add(keyTime)
@@ -193,7 +196,6 @@ for (key, keyTime) in event.waitKeys(keyList=['space', 'escape'], timeStamped=ex
 
 # experiment loop
 trialNo = 0
-# for thisTrial in trials:
 for thisTrial in trials:
     trialNo += 1
     # get the stimulus for this trial
@@ -209,8 +211,6 @@ for thisTrial in trials:
     participantWin.flip()
 ##########################################################################################################
     # present the stimuli
-    # ILONA INSERT CODE HERE
-    # GET THE ORDER FOR THE SKIN REGION FROM "po" (LINES 120-121, 133)
     # outputFiles.logEvent(exptClock.getTime(), '{} then {}'.format(stimPair[po], stimPair[1 - po]))
     outputFiles.logEvent(exptClock.getTime(), '{} then {}'.format(stimPair2log[po], stimPair2log[1 - po]))
     # calculate x and y distance in mm for the next motor move
@@ -224,6 +224,7 @@ for thisTrial in trials:
     outputFiles.logEvent(exptClock.getTime(), "move x {}" .format(x_distance))
     outputFiles.logEvent(exptClock.getTime(), "move y {}" .format(y_distance))
     # select which axis to enable ttl on stop (the one with longer distance)
+    motorStartTime = exptClock.getTime()
     if abs(x_distance) >= abs(y_distance):
         my_motor.disable_ttl(my_motor.my_yaxis_id)
         my_motor.enable_ttl(my_motor.my_xaxis_id)
@@ -235,8 +236,11 @@ for thisTrial in trials:
         my_motor.move(my_motor.my_xaxis_id,x_distance)
         my_motor.move(my_motor.my_yaxis_id,y_distance)
     previous_motor_pos = stimPair[po]
-    # maybe here better?
-    time.sleep(WAIT_TIME_BETWEEN_MOTOR_MOVEMENTS_MS/1000)
+    while exptClock.getTime() < motorStartTime + (WAIT_TIME_BETWEEN_MOTOR_MOVEMENTS_MS/1000):
+        for (key, keyTime) in event.getKeys(['escape'], timeStamped=exptClock):
+            my_motor.close()
+            outputFiles.logAbort(keyTime)
+            core.quit()
     # start first sound
     pygame.mixer.pre_init()
     pygame.mixer.init()
@@ -246,7 +250,7 @@ for thisTrial in trials:
     while soundCh.get_busy():
         for (key, keyTime) in event.getKeys(['escape'], timeStamped=exptClock):
             soundCh.stop()
-            outputFiles.logEvent(keyTime, 'experiment aborted')
+            my_motor.close()
             outputFiles.logAbort(keyTime)
             core.quit()
     outputFiles.logEvent(exptClock.getTime(), 'first audio cue finished playing')
@@ -262,6 +266,7 @@ for thisTrial in trials:
     outputFiles.logEvent(exptClock.getTime(), "move x {}" .format(x_distance))
     outputFiles.logEvent(exptClock.getTime(), "move y {}" .format(y_distance))
     # select which axis to enable ttl on stop (the one with longer distance)
+    motorStartTime = exptClock.getTime()
     if abs(x_distance) > abs(y_distance):
         my_motor.disable_ttl(my_motor.my_yaxis_id)
         my_motor.enable_ttl(my_motor.my_xaxis_id)
@@ -275,8 +280,11 @@ for thisTrial in trials:
         my_motor.move(my_motor.my_xaxis_id,x_distance)
         my_motor.move(my_motor.my_yaxis_id,y_distance)
     previous_motor_pos = stimPair[1 - po]
-    # maybe sound here will be better?
-    time.sleep(WAIT_TIME_BETWEEN_MOTOR_MOVEMENTS_MS/1000)
+    while exptClock.getTime() < motorStartTime + (WAIT_TIME_BETWEEN_MOTOR_MOVEMENTS_MS/1000):
+        for (key, keyTime) in event.getKeys(['escape'], timeStamped=exptClock):
+            my_motor.close()
+            outputFiles.logAbort(keyTime)
+            core.quit()
     # play
     pygame.mixer.pre_init()
     pygame.mixer.init()
@@ -286,7 +294,7 @@ for thisTrial in trials:
     while soundCh.get_busy():
         for (key, keyTime) in event.getKeys(['escape'], timeStamped=exptClock):
             soundCh.stop()
-            outputFiles.logEvent(keyTime, 'experiment aborted')
+            my_motor.close()
             outputFiles.logAbort(keyTime)
             core.quit()
     outputFiles.logEvent(exptClock.getTime(), 'second audio cue finished playing')
@@ -305,6 +313,7 @@ for thisTrial in trials:
             participantResponded = True
         for (key, keyTime) in event.getKeys(['escape'], timeStamped=exptClock):
             if key in ['escape']:
+                my_motor.close()
                 outputFiles.logAbort(keyTime)
                 core.quit()
 
