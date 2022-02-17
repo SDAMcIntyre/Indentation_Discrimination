@@ -147,6 +147,7 @@ Processed Force Data/
 
 # R
 .Rhistory
-*.wav
-main_aurora_indent_discrim.py.bak
-aurora_indent_discrim.py.bak
+
+*.bak
+
+data/*
