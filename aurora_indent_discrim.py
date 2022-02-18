@@ -292,7 +292,7 @@ for thisTrial in trials:
     outputFiles.logEvent(exptClock.getTime(), 'second audio cue finished playing')
     # end of sound
     nIndentationsExpected += 1
-    file_pattern_secondIndentation = '--'+expt_file_prefix+'_{}_{}\d*_\d*\.ddf' .format(stimPairForces[po], nIndentationsExpected)
+    file_pattern_secondIndentation = '--'+expt_file_prefix+'_{}_{}\d*_\d*\.ddf' .format(stimPairForces[1-po], nIndentationsExpected)
 
 ##########################################################################################################
     # present question to participant
