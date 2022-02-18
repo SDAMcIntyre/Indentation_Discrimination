@@ -1,0 +1,8 @@
+time,event
+0,"experiment started"
+0.007167400000071211,"B then A"
+3.7469442000001436,"first stim audio cue started playing"
+4.340316100000564,"first audio cue finished playing"
+7.975192300000344,"second stim audio cue started playing"
+8.608794900000248,"second audio cue finished playing"
+23.284763999999996,"experiment aborted"

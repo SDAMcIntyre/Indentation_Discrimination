@@ -67,19 +67,19 @@ displayText = {'waitMessage': 'Please wait.',
 # -- GET INPUT FROM THE EXPERIMENTER --
 
 exptSettings = {
-    '00. Experiment Name': 'pilot',
-    '01. Participant Code': 'test',
+    '00. Experiment Name': 'film-shaved-aurora',
+    '01. Participant Code': '00',
     '02. Standard stimulus': '600.0',
     '03. Comparison stimuli': '250.0,400.0,600.0,800.0,900.0,1000.0, 1200.0',
     '04. Standard Area (A 1st, B 2nd)': 'A', #  (A 1st, B 2nd)
     '05. Comparison Area (A 1st, B 2nd)': 'B', #  (A 1st, B 2nd) # add line "Intervention Area:"
     '06. Intervention Area':'',
     '07. Intervention (film/shaved)':'',
-    '08. Number of repeats (even)': 2,
+    '08. Number of repeats (even)': 7,
     '09. Folder for saving data': 'data',
     '10. Participant screen': 0,
     '11. Participant screen resolution': '600,400',
-    '12. Path to Aurora Protocols': 'C:\\Emma protocols\\Protocols'
+    '12. Path to Aurora Protocols': 'C:\\EXPERIMENTS\\Indentation_Discrimination\\Emma protocols\\Protocols'
 }
 dlg = gui.DlgFromDict(exptSettings, title='Experiment details')
 if dlg.OK:
@@ -130,11 +130,12 @@ expt_file_prefix = (
         + '_P' + exptSettings['01. Participant Code']
 )
 
+data_folder = exptSettings['09. Folder for saving data'] + '/' + exptSettings['01. Participant Code'] + '/'
+
 # EXPORT OF AURORA SEQUENCE FILES
-foldername = exptSettings['09. Folder for saving data'] + '/'
 # create sequencer object that formats sequence file and paths
 aurora_sequencer = aurora_sequence_creator.SequenceCreator(exptSettings['12. Path to Aurora Protocols'],
-                                                            foldername,
+                                                            data_folder,
                                                             expt_file_prefix,
                                                             trials)
 # create current sequence
@@ -147,7 +148,7 @@ aurora_sequencer.create_sequence_file(my_force_seq)
 
 # -- MAKE FOLDER/FILES TO SAVE DATA --
 outputFiles = DataFileCollection(
-    foldername='./' + exptSettings['09. Folder for saving data'] + '/',
+    foldername='./' + data_folder,
     filename=expt_file_prefix,
     headers=['trial-number', 'standard', 'comparison', 'comparison.more.intense', 'presentation.order', 'response'],
     dlgInput=exptSettings
@@ -239,6 +240,7 @@ for thisTrial in trials:
     outputFiles.logEvent(exptClock.getTime(), "move x {}" .format(x_distance))
     outputFiles.logEvent(exptClock.getTime(), "move y {}" .format(y_distance))
     # select which axis to enable ttl on stop (the one with longer distance)
+    
     my_motor.move_xy_ttl(x_distance, y_distance)
     previous_motor_pos = stimPairPosition[po]
     motorStartTime = exptClock.getTime()
@@ -249,13 +251,6 @@ for thisTrial in trials:
             outputFiles.logAbort(keyTime)
             core.quit()
     outputFiles.logEvent(exptClock.getTime(), 'finished waiting {} ms for motor' .format(WAIT_TIME_BETWEEN_MOTOR_MOVEMENTS_MS))
-    # check if the stimulus really was delivered
-    nIndentationsExpected += 1
-    file_pattern_thisIndentation = '--\d*_'+expt_file_prefix+'_{}_{}\.ddf' .format(stimPairForces[po], nIndentationsExpected)
-    thisIndentationFile = [file for file in os.listdir(exptSettings['09. Folder for saving data']) if re.search(file_pattern_thisIndentation, file)]
-    outputFiles.logEvent(exptClock.getTime(), "Indentation delivered: {}" .format(thisIndentationFile))
-    nIndentationsDelivered = len([file for file in os.listdir(exptSettings['09. Folder for saving data']) if re.search(file_pattern, file)])
-    outputFiles.logEvent(exptClock.getTime(), "# indentations expected = {}. # delivered = {}.".format(nIndentationsExpected,nIndentationsDelivered))
     # start first sound
     soundCh = firstCue.play()
     outputFiles.logEvent(exptClock.getTime(), 'first stim audio cue started playing')
@@ -267,6 +262,9 @@ for thisTrial in trials:
             core.quit()
     outputFiles.logEvent(exptClock.getTime(), 'first audio cue finished playing')
     # end sound
+    nIndentationsExpected += 1
+    file_pattern_firstIndentation = '--'+expt_file_prefix+'_{}_{}\d*_\d*\.ddf' .format(stimPairForces[po], nIndentationsExpected)
+    
     # calculate x and y distance in mm for the next motor move
     outputFiles.logEvent(exptClock.getTime(), "Current pos {}" .format(previous_motor_pos))
     [x_distance, y_distance] = get_motor_distances(previous_motor_pos, stimPairPosition[1-po])
@@ -282,13 +280,6 @@ for thisTrial in trials:
             outputFiles.logAbort(keyTime)
             core.quit()
     outputFiles.logEvent(exptClock.getTime(), 'finished waiting {} ms for motor' .format(WAIT_TIME_BETWEEN_MOTOR_MOVEMENTS_MS))
-    # check if the stimulus really was delivered
-    nIndentationsExpected += 1
-    file_pattern_thisIndentation = '--\d*_'+expt_file_prefix+'_{}_{}\.ddf' .format(stimPairForces[po], nIndentationsExpected)
-    thisIndentationFile = [file for file in os.listdir(exptSettings['09. Folder for saving data']) if re.search(file_pattern_thisIndentation, file)]
-    outputFiles.logEvent(exptClock.getTime(), "Indentation delivered: {}" .format(thisIndentationFile))
-    nIndentationsDelivered = len([file for file in os.listdir(exptSettings['09. Folder for saving data']) if re.search(file_pattern, file)])
-    outputFiles.logEvent(exptClock.getTime(), "# indentations expected = {}. # delivered = {}.".format(nIndentationsExpected,nIndentationsDelivered))
     # play
     soundCh = secondCue.play()
     outputFiles.logEvent(exptClock.getTime(), 'second stim audio cue started playing')
@@ -300,6 +291,9 @@ for thisTrial in trials:
             core.quit()
     outputFiles.logEvent(exptClock.getTime(), 'second audio cue finished playing')
     # end of sound
+    nIndentationsExpected += 1
+    file_pattern_secondIndentation = '--'+expt_file_prefix+'_{}_{}\d*_\d*\.ddf' .format(stimPairForces[po], nIndentationsExpected)
+
 ##########################################################################################################
     # present question to participant
     participantResponded = False
@@ -331,6 +325,16 @@ for thisTrial in trials:
         thisTrial['presentation order'],
         response
     ])
+    
+    # check if the stimulus really was delivered
+    firstIndentationFile = [file for file in os.listdir(data_folder) if re.search(file_pattern_firstIndentation, file)]
+    outputFiles.logEvent(exptClock.getTime(), "First indentation file detected: {}" .format(firstIndentationFile))
+
+    secondIndentationFile = [file for file in os.listdir(data_folder) if re.search(file_pattern_secondIndentation, file)]
+    outputFiles.logEvent(exptClock.getTime(), "Second indentation file detected: {}" .format(secondIndentationFile))
+
+    nIndentationsDelivered = len([file for file in os.listdir(data_folder) if re.search(file_pattern, file)])
+    outputFiles.logEvent(exptClock.getTime(), "# indentations expected = {}. # delivered = {}.".format(nIndentationsExpected,nIndentationsDelivered))
 
     outputFiles.logEvent(exptClock.getTime(), '{} of {} complete'.format(trialNo, len(trials)))
 
