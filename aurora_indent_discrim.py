@@ -126,8 +126,9 @@ trials = coord.add_coordinates2forces(init_trials,standard_area,comparison_area)
 #file prefix to match aurora data files with python data files
 expt_file_prefix = (
         exptSettings['00. Experiment Name'] +
-        '_' + data.getDateStr(format='%Y-%m-%d_%H-%M-%S')
-        + '_P' + exptSettings['01. Participant Code']
+        '_' + data.getDateStr(format='%Y-%m-%d_%H-%M-%S') +
+        '_P' + exptSettings['01. Participant Code'] +
+        '_' + exptSettings['07. Intervention (film/shaved)']
 )
 
 data_folder = exptSettings['09. Folder for saving data'] + '/' + exptSettings['01. Participant Code'] + '/'
