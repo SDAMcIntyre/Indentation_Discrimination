@@ -11,9 +11,9 @@ from expt_helpers import *
 #######################################
 # FLEXIBLE PARAMETERS
 # time for aurora to apply force
-WAIT_TIME_BETWEEN_MOTOR_MOVEMENTS_MS = 3100
+WAIT_TIME_BETWEEN_MOTOR_MOVEMENTS_MS = 3600
 # there will be created a few points within each square (A and B)
-HOW_MANY_POINTS_IN_EACH_SQUARE = 3
+HOW_MANY_POINTS_IN_EACH_SQUARE = 5
 # distances in mm
 DISTANCE_FROM_MIDLINE = 3
 VERTICAL_DISTANCE_BETWEEN_POINTS = 1
@@ -68,13 +68,13 @@ displayText = {'waitMessage': 'Please wait.',
 
 exptSettings = {
     '00. Experiment Name': 'film-shaved-aurora',
-    '01. Participant Code': '01',
+    '01. Participant Code': '06',
     '02. Standard stimulus': '600.0',
     '03. Comparison stimuli': '250.0,400.0,600.0,800.0,900.0,1000.0, 1200.0',
     '04. Standard Area (A 1st, B 2nd)': 'A', #  (A 1st, B 2nd)
     '05. Comparison Area (A 1st, B 2nd)': 'B', #  (A 1st, B 2nd) # add line "Intervention Area:"
-    '06. Intervention Area':'',
-    '07. Intervention (film/shaved)':'film',
+    '06. Intervention Area':'B',
+    '07. Intervention (film/shaved)':'',
     '08. Number of repeats (even)': 7,
     '09. Folder for saving data': 'data',
     '10. Participant screen': 0,
