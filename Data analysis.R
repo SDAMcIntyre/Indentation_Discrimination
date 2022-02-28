@@ -7,7 +7,7 @@ library(ggplot2)
 filelist <- list.files(
   'C:/Users/emma_/OneDrive/Skrivbord/R course/data',
   # 'C:/Users/emma_/OneDrive/Skrivbord/R course/pilot2', 
-  # '/Users/sarmc72/Library/CloudStorage/OneDrive-Linköpingsuniversitet/projects - in progress/Skin imaging/Data Pilot Indentation Discrimination',
+  # '/Users/sarmc72/Library/CloudStorage/OneDrive-Link?pingsuniversitet/projects - in progress/Skin imaging/Data Pilot Indentation Discrimination',
   pattern = 'data', 
   recursive = TRUE,
   full.names = TRUE)
@@ -51,9 +51,9 @@ ggplot(data, aes(x = comparison, y = comparison.more.intense, colour = condition
   scale_y_continuous(limits = c(0,1))
 
 # fit psychometric functions
-shaved_only_data <- filter(data, condition == "shaved")
+#shaved_only_data <- filter(data, condition == "shaved")
 fit <- quickpsy(
-  d = shaved_only_data, 
+  d = data, 
   x = comparison, 
   k = comparison.more.intense,
   grouping = .(condition, PID),
